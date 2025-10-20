@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  data-collector:
+    build: ./data-collector
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./config/.env
+    volumes:
+      - ./data-collector/src:/app/src
+      - ./config:/app/config
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # analytics-engine:
+  #   build: ./analytics-engine
+  #   ports:
+  #     - "8001:8001"
+  #   env_file:
+  #     - ./config/.env
+  #   volumes:
+  #     - ./analytics-engine/src:/app/src
+  #     - ./config:/app/config
+  #   depends_on:
+  #     - postgres
+  #   restart: unless-stopped
+
+  # visualization-api:
+  #   build: ./visualization-api
+  #   ports:
+  #     - "8002:8002"
+  #   env_file:
+  #     - ./config/.env
+  #   volumes:
+  #     - ./visualization-api/src:/app/src
+  #     - ./config:/app/config
+  #   depends_on:
+  #     - postgres
+  #   restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: basketball
+      POSTGRES_USER: basketball_user
+      POSTGRES_PASSWORD: basketball_password
+    ports:
+      - "5432:5432"  # Добавляем проброс порта
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U basketball_user -d basketball"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@basketball.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
