@@ -273,6 +273,36 @@ class Odds(Base):
     # Связи
     game = relationship("Game")
 
+class TeamAlias(Base):
+    __tablename__ = 'team_aliases'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    team_id = Column(Integer, ForeignKey('teams.id'), nullable=False)  # Ссылка на нашу команду
+    betcity_name = Column(String(200), nullable=False)  # Название в Betcity
+    source_api = Column(String(50), default='basketball-api')  # Откуда данные
+    confidence = Column(Float, default=1.0)  # Уверенность в совпадении (0-1)
+    
+    # Метаданные
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    
+    # Связи
+    team = relationship("Team")
+
+class LeagueMapping(Base):
+    __tablename__ = 'league_mappings'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    league_id = Column(Integer, ForeignKey('leagues.id'), nullable=False)  # Наша лига
+    betcity_league_id = Column(Integer, nullable=False)  # ID лиги в Betcity
+    betcity_league_name = Column(String(200))  # Название в Betcity
+    
+    # Метаданные
+    created_at = Column(DateTime, server_default=func.now())
+    
+    # Связи
+    league = relationship("League")
+
 # Асинхронный менеджер БД
 class DatabaseManager:
     def __init__(self):

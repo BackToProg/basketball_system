@@ -2,6 +2,7 @@ from .league_repository import LeagueRepository, SeasonRepository
 from .team_repository import TeamRepository, TeamSeasonStatsRepository
 from .game_repository import GameRepository
 from .player_repository import PlayerRepository, PlayerGameStatsRepository
+from .alias_repository import TeamAliasRepository, LeagueMappingRepository
 
 class AsyncRepositoryFacade:
     """Асинхронный фасад для работы со всеми репозиториями"""
@@ -14,6 +15,8 @@ class AsyncRepositoryFacade:
         self.games = GameRepository()
         self.players = PlayerRepository()
         self.player_stats = PlayerGameStatsRepository()
+        self.team_aliases = TeamAliasRepository()  
+        self.league_mappings = LeagueMappingRepository()  
 
 # Создаем глобальный экземпляр фасада
 repositories = AsyncRepositoryFacade()
